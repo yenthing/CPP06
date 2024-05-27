@@ -3,6 +3,9 @@
 #include <iostream>
 #include <string>
 #include <limits>
+#include <cstdlib>
+
+
 
 class ScalarConverter
 {
@@ -16,6 +19,7 @@ class ScalarConverter
 
         void convert();
         void print() const;
+        void getStr() const;
 
     private:
         void toChar();
