@@ -37,104 +37,130 @@ ScalarConverter &ScalarConverter::operator=(const ScalarConverter &other)
 
 void ScalarConverter::convert()
 {
-   
-    if (_str == "nan" || _str == "nanf")
+    if (_str.length() == 1 && !std::isdigit(_str[0]))
     {
-        _isNan = true;
-        std::cout << "char: impossible" << std::endl;
-        std::cout << "int: impossible" << std::endl;
-        std::cout << "float: nanf" << std::endl;
-        std::cout << "double: nan" << std::endl;
-        return;
-    }
-    if (_str == "inf" || _str == "inff" || _str == "+inf" || _str == "+inff")
-    {
-        _isInf = true;
-        std::cout << "char: impossible" << std::endl;
-        std::cout << "int: impossible" << std::endl;
-        std::cout << "float: inff" << std::endl;
-        std::cout << "double: inf" << std::endl;
-        return;
-    }
-    if (_str == "-inf" || _str == "-inff")
-    {
-        _isInf = true;
-        std::cout << "char: impossible" << std::endl;
-        std::cout << "int: impossible" << std::endl;
-        std::cout << "float: -inff" << std::endl;
-        std::cout << "double: -inf" << std::endl;
-        return;
-    }
-    
-}
-
-void ScalarConverter::print() const
-{
-}
-
-   
-
-void ScalarConverter::toChar()
-{
-    try
-    {
-        while(_str.length() > 1 && _str[0] == '0')
-            _str.erase(0, 1);
-        _char = static_cast<char>(std::atoi(_str.c_str()));
-        if (_char == '0')
-        {
-            _char = 0;
-            std::cout << "char: Non displayable" << std::endl;
-            _isChar = true;
-            return;
-        }
-        else if (!std::isprint(_char) && std::isprint(_str[0]))
-            std::cerr << "char: non displayable" << std::endl;
-            // throw std::exception();
+        _char = _str[0];
         _isChar = true;
-    }
-    catch (std::exception &e)
-    {
-        std::cerr << "char: non displayable" << std::endl;
-        _isChar = false;
-    }
-}
-
-void ScalarConverter::toInt()
-{
-    try
-    {
-        _int = std::atoi(_str.c_str());
         _isInt = true;
-    }
-    catch (std::exception &e)
-    {
-        _isInt = false;
-    }
-}
-
-void ScalarConverter::toFloat()
-{
-    try
-    {
-        _float = std::atof(_str.c_str());
         _isFloat = true;
-    }
-    catch (std::exception &e)
-    {
-        _isFloat = false;
-    }
-}
-
-void ScalarConverter::toDouble()
-{
-    try
-    {
-        _double = std::atof(_str.c_str());
         _isDouble = true;
     }
-    catch (std::exception &e)
+    else
     {
-        _isDouble = false;
+        char *end;
+        try
+        {
+            if (_str.back() == 'f')
+            {
+                std::string tempStr = _str.substr(0, _str.size() - 1);
+                size_t dotPos = tempStr.find('.');
+                if (dotPos != std::string::npos && dotPos < tempStr.size() - 1 && std::all_of(tempStr.begin() + dotPos + 1, tempStr.end(), ::isdigit))
+                {
+                    _char = '*';
+                    _isChar = true;
+                    _isInt = true;
+                    _isFloat = true;
+                    _isDouble = true;
+                }
+            }
+            else
+            {
+                _char = _str[0];
+                _int = std::stoi(_str);
+                _isInt = true;
+                _isFloat = true;
+                _isDouble = true;
+            }
+           
+        }
+        catch (const std::exception &e)
+        {
+            _isInt = false;
+        }
+        try
+        {
+            _float = std::strtof(_str.c_str(), &end);
+            if (*end == 'f')
+                end++;
+            if (end != _str && *end == '\0')
+            {
+                if (_float == std::numeric_limits<float>::infinity() || _float == -std::numeric_limits<float>::infinity())
+                    _isInf = true;
+                if (std::isnan(_float))
+                    _isNan = true;
+                if (_float == std::numeric_limits<float>::infinity() || _float == -std::numeric_limits<float>::infinity())
+                    _isInf = true;
+                if (std::isnan(_float))
+                    _isNan = true;
+            }
+            else
+            {
+                _isFloat = false;
+                _double = false;
+            }
+            
+        }
+        catch (const std::exception &e)
+        {
+            _isFloat = false;
+        }
+        try
+        {
+            _double = std::strtod(_str.c_str(), &end);
+            if (*end == 'f')
+                end++;
+            if (end != _str && *end == '\0')
+            {
+                if (_double == std::numeric_limits<double>::infinity() || _double == -std::numeric_limits<double>::infinity())
+                    _isInf = true;
+                if (std::isnan(_double))
+                    _isNan = true;
+            }
+            else
+                _isDouble = false;
+        }
+        catch (const std::exception &e)
+        {
+            _isDouble = false;
+        }
     }
+    if (_str == "nan" || _str == "+inf" || _str == "-inf" || _str == "-inff" || _str == "+inff")
+    {
+        _isInf = true;
+        _isNan = true;
+    }
+}
+
+void ScalarConverter::print()
+{
+    std::cout << "char: ";
+    if (_isChar)
+    {
+        if (_char == '*' || std::isalpha(_char))
+            std::cout << "'" << _char << "'" << std::endl;
+        else
+            std::cout << "Non displayable" << std::endl;
+    }
+    else if (std::isdigit(_char) && !_isChar)
+        std::cout << "Non displayable" << std::endl;
+    else
+        std::cout << "impossible" << std::endl;
+
+    std::cout << "int: ";
+    if (_isInt)
+        std::cout << _int << std::endl;
+    else
+        std::cout << "impossible" << std::endl;
+
+    std::cout << "float: ";
+    if (_isFloat)
+        std::cout << std::fixed << std::setprecision(1) << _float << "f" << std::endl;
+    else
+        std::cout << "impossible" << std::endl;
+
+    std::cout << "double: ";
+    if (_isDouble)
+        std::cout << _double << "" << std::endl;
+    else
+        std::cout << "impossible" << std::endl;
 }
