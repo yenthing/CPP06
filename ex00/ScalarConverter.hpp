@@ -1,33 +1,29 @@
 #pragma once
 
 #include <iostream>
+#include <climits>
+#include <cfloat>
+#include <cerrno>
+#include <cmath>
+#include <cstdlib>
 #include <iomanip>
 #include <string>
-#include <limits>
-#include <cstdlib>
 
-class ScalarConverter
-{
-    private:
-        std::string _str;
-        char _char;
-        int _int;
-        float _float;
-        double _double;
-        bool _isInf;
-        bool _isNan;
-        bool _isChar;
-        bool _isInt;
-        bool _isFloat;
-        bool _isDouble;
+class ScalarConverter {
+public:
+    static void convert(const std::string &str);
+    
+private:
+    ScalarConverter();
+    ~ScalarConverter();
 
-    public:
-        ScalarConverter();
-        ScalarConverter(const std::string &str);
-        ScalarConverter(const ScalarConverter &other);
-        ~ScalarConverter();
-        ScalarConverter &operator=(const ScalarConverter &other);
+    static bool isChar(const std::string &str);
+    static bool isInt(const std::string &str);
+    static bool isFloat(const std::string &str);
+    static bool isDouble(const std::string &str);
 
-        void convert();
-        void print();
+    static void printChar(char c);
+    static void printInt(int i);
+    static void printFloat(float f);
+    static void printDouble(double d);
 };

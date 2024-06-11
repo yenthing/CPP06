@@ -7,8 +7,6 @@ int main(int ac, char **av)
         std::cerr << "Usage: ./a.out <Please enter a value here!>" << std::endl;
         return 1;
     }
-    ScalarConverter sc(av[1]);
-    sc.convert();
-    sc.print();
+    ScalarConverter::convert(av[1]);
     return 0;
 }
