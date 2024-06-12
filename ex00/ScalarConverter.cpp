@@ -1,6 +1,19 @@
 #include "ScalarConverter.hpp"
 
 ScalarConverter::ScalarConverter() {}
+
+ScalarConverter::ScalarConverter(const ScalarConverter &other)
+{
+    (void)other;
+    return;
+}
+
+ScalarConverter &ScalarConverter::operator=(const ScalarConverter &other) 
+{ 
+    (void)other;
+    return *this;
+}
+
 ScalarConverter::~ScalarConverter() {}
 
 void ScalarConverter::convert(const std::string &str)
@@ -42,8 +55,14 @@ void ScalarConverter::convert(const std::string &str)
             }
             else
             {
-                printChar(static_cast<char>(f));
-                printInt(static_cast<int>(f));
+                if (f < CHAR_MIN || f > CHAR_MAX)
+                    std::cout << "char: impossible" << std::endl;
+                else
+                    printChar(static_cast<char>(f));
+                if (f < INT_MIN || f > INT_MAX)
+                    std::cout << "int: impossible" << std::endl;
+                else
+                    printInt(static_cast<int>(f));
             }
             printFloat(f);
             printDouble(static_cast<double>(f));
@@ -63,8 +82,14 @@ void ScalarConverter::convert(const std::string &str)
             }
             else
             {
-                printChar(static_cast<char>(d));
-                printInt(static_cast<int>(d));
+                if (d < CHAR_MIN || d > CHAR_MAX)
+                    std::cout << "char: impossible" << std::endl;
+                else
+                    printChar(static_cast<char>(d));
+                if (d < INT_MIN || d > INT_MAX)
+                    std::cout << "int: impossible" << std::endl;
+                else
+                    printInt(static_cast<int>(d));
             }
             printFloat(static_cast<float>(d));
             printDouble(d);
@@ -89,6 +114,8 @@ bool ScalarConverter::isInt(const std::string &str)
 
 bool ScalarConverter::isFloat(const std::string &str)
 {
+    if (str == "-inff" || str == "+inff" || str == "nanf")
+        return true;
     char *endptr;
     errno = 0;
     std::strtof(str.c_str(), &endptr);
@@ -97,6 +124,8 @@ bool ScalarConverter::isFloat(const std::string &str)
 
 bool ScalarConverter::isDouble(const std::string &str)
 {
+    if (str == "-inf" || str == "+inf" || str == "nan")
+        return true;
     char *endptr;
     errno = 0;
     std::strtod(str.c_str(), &endptr);

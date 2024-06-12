@@ -3,7 +3,8 @@
 #include "B.hpp"
 #include "C.hpp"
 
-void testClass(Base* base) {
+void testClass(Base* base)
+{
     identify(base);
     identify(*base);
     delete base;

@@ -16,6 +16,8 @@ public:
 private:
     ScalarConverter();
     ~ScalarConverter();
+    ScalarConverter(const ScalarConverter &other);
+    ScalarConverter &operator=(const ScalarConverter &other);
 
     static bool isChar(const std::string &str);
     static bool isInt(const std::string &str);
